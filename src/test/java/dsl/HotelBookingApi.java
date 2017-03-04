@@ -58,7 +58,7 @@ public class HotelBookingApi {
         }
     }
 
-    public void removeBooking(String bookingFirstName) throws IOException {
+    public void deleteBooking(String bookingFirstName) throws IOException {
         final Integer bookingId = testContext.bookingIds.get(bookingFirstName);
         HttpResponse response = httpDrivers.delete("http://hotel-test.equalexperts.io/booking/" + bookingId);
         testContext.bookingIds.remove(bookingFirstName);

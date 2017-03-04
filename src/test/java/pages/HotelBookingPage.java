@@ -65,7 +65,7 @@ public class HotelBookingPage {
         return false;
     }
 
-    public void removeBooking(final String firstname) {
+    public void deleteBooking(final String firstname) {
 
         waitForNewRowDisplayed(firstname);
 

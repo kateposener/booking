@@ -36,6 +36,12 @@ public class HotelBookingUi {
         hotelBookingPage.verifyBookingByFirstName(firstName);
     }
 
+    public void deleteBooking(String bookingFirstName) {
+        hotelBookingPage.deleteBooking(bookingFirstName);
+
+        testContext.bookingIds.remove(bookingFirstName);
+    }
+
     void closeBrowser() {
         driver.quit();
     }
