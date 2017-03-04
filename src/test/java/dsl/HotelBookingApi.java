@@ -11,15 +11,15 @@ import java.io.IOException;
 
 public class HotelBookingApi {
 
-    HttpDrivers httpDrivers;
+    private HttpDrivers httpDrivers;
     private TestContext testContext;
 
-    public HotelBookingApi(TestContext testContext) {
+    HotelBookingApi(TestContext testContext) {
         this.testContext = testContext;
         this.httpDrivers = new HttpDrivers();
     }
 
-    public void createBooking(String bookingIdAlias, String firstName, String lastName, String totalPrice,
+    public void createBooking(String firstName, String lastName, String totalPrice,
                               String depositPaid, String checkIn, String checkOut) throws IOException {
 
         GetHotelBookingResponse body = new GetHotelBookingResponse(firstName, lastName, totalPrice, depositPaid, checkIn, checkOut);
@@ -29,26 +29,26 @@ public class HotelBookingApi {
         PostHotelBookingResponse response = httpDrivers.post("http://hotel-test.equalexperts.io/booking", postBody);
 
         if (response.bookingid != null) {
-            testContext.bookingIds.put(bookingIdAlias, Integer.parseInt(response.bookingid));
+            testContext.bookingIds.put(firstName, Integer.parseInt(response.bookingid));
         }
         else {
             Assert.fail("Booking creation failed");
         }
     }
 
-    public void getBooking(final String bookingIdAlias, final boolean expectResponse) throws IOException {
+    public void getBooking(final String bookingFirstName, final boolean expectResponse) throws IOException {
         final String bookingId;
 
-        if (isLiteral(bookingIdAlias)) {
-            bookingId = extractLiteral(bookingIdAlias);
+        if (isLiteral(bookingFirstName)) {
+            bookingId = extractLiteral(bookingFirstName);
         }
         else {
-            bookingId = testContext.bookingIds.get(bookingIdAlias).toString();
+            bookingId = testContext.bookingIds.get(bookingFirstName).toString();
         }
 
         GetHotelBookingResponse response = httpDrivers.get("http://hotel-test.equalexperts.io/booking/" + bookingId, 200);
 
-        if (expectResponse == true)
+        if (expectResponse)
         {
             Assert.assertNotNull(response, "Did not get response and was expecting one");
         }
@@ -58,10 +58,10 @@ public class HotelBookingApi {
         }
     }
 
-    public void removeBooking(String bookingIdAlias) throws IOException {
-        final String bookingId = testContext.bookingIds.get(bookingIdAlias).toString();
+    public void removeBooking(String bookingFirstName) throws IOException {
+        final String bookingId = testContext.bookingIds.get(bookingFirstName).toString();
         HttpResponse response = httpDrivers.delete("http://hotel-test.equalexperts.io/booking/" + bookingId);
-        testContext.bookingIds.remove(bookingIdAlias);
+        testContext.bookingIds.remove(bookingFirstName);
 
         Assert.assertEquals(response.getStatusLine().getStatusCode(), 201); // this is an incorrect response code!
 
@@ -74,11 +74,8 @@ public class HotelBookingApi {
     }
 
     private boolean isLiteral(final String input) {
-        if (input.charAt(0) == '<') {
-            return true;
-        }
+        return input.charAt(0) == '<';
 
-        return false;
     }
 
     private String extractLiteral(String input) {

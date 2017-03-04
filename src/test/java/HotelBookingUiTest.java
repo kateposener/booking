@@ -16,8 +16,7 @@ public class HotelBookingUiTest extends TestBase {
     }
 
     @AfterTest
-    public void tearDown() {
-        hotelBookingUi.removeAllBookings();
-        hotelBookingUi.closeBrowser();
+    public void tearDown() throws IOException {
+        tearDownBase();
     }
 }

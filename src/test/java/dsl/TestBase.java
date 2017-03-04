@@ -5,20 +5,25 @@ import java.util.Map;
 
 public class TestBase {
 
-    public TestContext testContext;
-    public HotelBookingApi hotelBookingApi;
-    public HotelBookingUi hotelBookingUi;
+    private TestContext testContext;
+    protected HotelBookingApi hotelBookingApi;
+    protected HotelBookingUi hotelBookingUi;
 
-    public TestBase() {
+    protected TestBase() {
         this.testContext = new TestContext();
         this.hotelBookingApi = new HotelBookingApi(testContext);
         this.hotelBookingUi = new HotelBookingUi(testContext);
     }
 
-    public void tearDownBookingIds() throws IOException {
+    private void tearDownBookingIds() throws IOException {
         for (Map.Entry<String, Integer> entry : testContext.bookingIds.entrySet())
         {
             hotelBookingApi.removeBooking(entry.getKey());
         }
+    }
+
+    protected void tearDownBase() throws IOException {
+        tearDownBookingIds();
+        hotelBookingUi.closeBrowser();
     }
 }

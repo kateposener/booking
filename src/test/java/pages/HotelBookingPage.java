@@ -69,17 +69,10 @@ public class HotelBookingPage {
 
         waitForNewRowDisplayed(firstname);
 
-        List<WebElement> rows = driver.findElements(By.className("row"));
+        final Integer rowId = getBookingId(firstname);
 
-        for (WebElement row : rows)
-        {
-            if (row.getText().contains(firstname)) {
-                String rowId = row.getAttribute("id");
-                String deleteButtonXPathLocator = "//*[@id=\"" + rowId + "\"]/div[7]/input";
-                driver.findElement(By.xpath(deleteButtonXPathLocator)).click();
-                break;
-            }
-        }
+        String deleteButtonXPathLocator = "//*[@id=\"" + rowId + "\"]/div[7]/input";
+        driver.findElement(By.xpath(deleteButtonXPathLocator)).click();
     }
 
     private void waitForNewRowDisplayed(final String firstname) {
@@ -100,5 +93,22 @@ public class HotelBookingPage {
                 return false;
             }
         });
+    }
+
+    public Integer getBookingId(final String firstname) {
+
+        waitForNewRowDisplayed(firstname);
+
+        List<WebElement> rows = driver.findElements(By.className("row"));
+
+        for (WebElement row : rows)
+        {
+            if (row.getText().contains(firstname)) {
+                String rowId = row.getAttribute("id");
+                return Integer.valueOf(rowId);
+            }
+        }
+
+        return null;
     }
 }

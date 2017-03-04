@@ -5,17 +5,15 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import pages.HotelBookingPage;
 
-import java.util.List;
-
 public class HotelBookingUi {
 
-    WebDriver driver;
+    private WebDriver driver;
     private TestContext testContext;
-    HotelBookingPage hotelBookingPage;
+    private HotelBookingPage hotelBookingPage;
 
-    String baseUrl = "http://hotel-test.equalexperts.io/";
+    private String baseUrl = "http://hotel-test.equalexperts.io/";
 
-    public HotelBookingUi(TestContext testContext) {
+    HotelBookingUi(TestContext testContext) {
         this.testContext = testContext;
         ChromeDriverManager.getInstance().setup();
         this.driver = new ChromeDriver();
@@ -31,19 +29,12 @@ public class HotelBookingUi {
 
         hotelBookingPage.createBooking(firstName, lastName, totalPrice, depositPaid, checkIn, checkOut);
 
-        testContext.bookingFirstNames.add(firstName);
+        testContext.bookingIds.put(firstName, hotelBookingPage.getBookingId(firstName));
 
         hotelBookingPage.verifyBookingByFirstName(firstName);
     }
 
-    public void closeBrowser() {
-        driver.close();
-    }
-
-    public void removeAllBookings() {
-        List<String> bookingFirstNames = testContext.bookingFirstNames;
-        for (String firstName : bookingFirstNames) {
-            hotelBookingPage.removeBooking(firstName);
-        }
+    void closeBrowser() {
+        driver.quit();
     }
 }
