@@ -59,23 +59,21 @@ public class HotelBookingApi {
     }
 
     public void removeBooking(String bookingFirstName) throws IOException {
-        final String bookingId = testContext.bookingIds.get(bookingFirstName).toString();
+        final Integer bookingId = testContext.bookingIds.get(bookingFirstName);
         HttpResponse response = httpDrivers.delete("http://hotel-test.equalexperts.io/booking/" + bookingId);
         testContext.bookingIds.remove(bookingFirstName);
 
         Assert.assertEquals(response.getStatusLine().getStatusCode(), 201); // this is an incorrect response code!
-
-        verifyNoBookingExists(bookingId);
     }
 
-    private void verifyNoBookingExists(String bookingId) throws IOException {
+    public void verifyNoBookingExists(String bookingFirstName) throws IOException {
+        final Integer bookingId = testContext.bookingIds.get(bookingFirstName);
         GetHotelBookingResponse response = httpDrivers.get("http://hotel-test.equalexperts.io/booking/" + bookingId, 404);
         Assert.assertNull(response);
     }
 
     private boolean isLiteral(final String input) {
         return input.charAt(0) == '<';
-
     }
 
     private String extractLiteral(String input) {

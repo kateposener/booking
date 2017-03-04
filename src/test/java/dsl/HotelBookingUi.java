@@ -30,7 +30,9 @@ public class HotelBookingUi {
         hotelBookingPage.createBooking(firstName, lastName, totalPrice, depositPaid, checkIn, checkOut);
 
         testContext.bookingIds.put(firstName, hotelBookingPage.getBookingId(firstName));
+    }
 
+    public void verifyBookingByFirstName(final String firstName) {
         hotelBookingPage.verifyBookingByFirstName(firstName);
     }
 

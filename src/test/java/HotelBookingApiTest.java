@@ -24,6 +24,7 @@ public class HotelBookingApiTest extends TestBase {
     public void shouldRemoveBooking() throws IOException {
         hotelBookingApi.createBooking("first2", "last2", "50", "true", "2018-02-28", "2018-03-01");
         hotelBookingApi.removeBooking("first2");
+        hotelBookingApi.verifyNoBookingExists("first2");
     }
 
     @AfterTest
