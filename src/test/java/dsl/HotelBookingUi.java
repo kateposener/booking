@@ -1,5 +1,6 @@
 package dsl;
 
+import io.github.bonigarcia.wdm.ChromeDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import pages.HotelBookingPage;
@@ -16,6 +17,7 @@ public class HotelBookingUi {
 
     public HotelBookingUi(TestContext testContext) {
         this.testContext = testContext;
+        ChromeDriverManager.getInstance().setup();
         this.driver = new ChromeDriver();
         this.hotelBookingPage = new HotelBookingPage(driver);
     }

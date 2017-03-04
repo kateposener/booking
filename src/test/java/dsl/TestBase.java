@@ -12,7 +12,7 @@ public class TestBase {
     public TestBase() {
         this.testContext = new TestContext();
         this.hotelBookingApi = new HotelBookingApi(testContext);
-//        this.hotelBookingUi = new HotelBookingUi(testContext);
+        this.hotelBookingUi = new HotelBookingUi(testContext);
     }
 
     public void tearDownBookingIds() throws IOException {
