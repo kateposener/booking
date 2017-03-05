@@ -11,8 +11,8 @@ public class HotelBookingApiTest extends TestBase {
 
     @Test
     public void shouldCreateBooking() throws IOException {
-        hotelBookingApi.createBooking("first1", "last1", "50", "true", "2018-02-28", "2018-03-01");
-        hotelBookingApi.getBooking("first1", true);
+        hotelBookingApi.createBooking("firstCreate", "last", "50", "true", "2018-02-28", "2018-03-01");
+        hotelBookingApi.getBooking("firstCreate", true);
     }
 
     @Test
@@ -22,13 +22,13 @@ public class HotelBookingApiTest extends TestBase {
 
     @Test
     public void shouldDeleteBooking() throws IOException {
-        hotelBookingApi.createBooking("first2", "last2", "50", "true", "2018-02-28", "2018-03-01");
-        hotelBookingApi.deleteBooking("first2");
-        hotelBookingApi.verifyNoBookingExists("first2");
+        hotelBookingApi.createBooking("firstDelete", "last", "50", "true", "2018-02-28", "2018-03-01");
+        hotelBookingApi.deleteBooking("firstDelete");
+        hotelBookingApi.verifyNoBookingExists("firstDelete");
     }
 
     @AfterTest
-    public void tearDown() throws IOException {
-        tearDownBase();
+    public void afterTest() throws IOException {
+        tearDown();
     }
 }

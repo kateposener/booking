@@ -5,6 +5,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import pages.HotelBookingPage;
 
+import static dsl.TestBase.randomiseSuffix;
+
 public class HotelBookingUi {
 
     private WebDriver driver;
@@ -27,19 +29,24 @@ public class HotelBookingUi {
     public void createBooking(String firstName, String lastName, String totalPrice, String depositPaid,
                               String checkIn, String checkOut) {
 
-        hotelBookingPage.createBooking(firstName, lastName, totalPrice, depositPaid, checkIn, checkOut);
+        final String randomisedFirstName = randomiseSuffix(firstName);
+        hotelBookingPage.createBooking(randomisedFirstName, lastName, totalPrice, depositPaid, checkIn, checkOut);
 
-        testContext.bookingIds.put(firstName, hotelBookingPage.getBookingId(firstName));
+        testContext.bookingIds.put(firstName, hotelBookingPage.getBookingId(randomisedFirstName));
+        testContext.bookingFirstNames.put(firstName, randomisedFirstName);
     }
 
-    public void verifyBookingByFirstName(final String firstName) {
+    public void verifyBookingByFirstName(final String bookingFirstName) {
+        final String firstName = testContext.bookingFirstNames.get(bookingFirstName);
         hotelBookingPage.verifyBookingByFirstName(firstName);
     }
 
     public void deleteBooking(String bookingFirstName) {
-        hotelBookingPage.deleteBooking(bookingFirstName);
+        final String firstName = testContext.bookingFirstNames.get(bookingFirstName);
+        hotelBookingPage.deleteBooking(firstName);
 
         testContext.bookingIds.remove(bookingFirstName);
+        testContext.bookingFirstNames.remove(bookingFirstName);
     }
 
     void closeBrowser() {

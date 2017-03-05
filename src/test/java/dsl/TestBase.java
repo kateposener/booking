@@ -1,5 +1,7 @@
 package dsl;
 
+import org.apache.commons.lang3.RandomStringUtils;
+
 import java.io.IOException;
 import java.util.Map;
 
@@ -22,7 +24,12 @@ public class TestBase {
         }
     }
 
-    protected void tearDownBase() throws IOException {
+    protected static String randomiseSuffix(final String input) {
+        String randomString = RandomStringUtils.randomAlphanumeric(5);
+        return input + randomString;
+    }
+
+    protected void tearDown() throws IOException {
         tearDownBookingIds();
         hotelBookingUi.closeBrowser();
     }

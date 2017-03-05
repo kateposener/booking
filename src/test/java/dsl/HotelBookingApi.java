@@ -9,6 +9,8 @@ import responses.PostHotelBookingResponse;
 
 import java.io.IOException;
 
+import static dsl.TestBase.randomiseSuffix;
+
 public class HotelBookingApi {
 
     private HttpDrivers httpDrivers;
@@ -22,7 +24,8 @@ public class HotelBookingApi {
     public void createBooking(String firstName, String lastName, String totalPrice,
                               String depositPaid, String checkIn, String checkOut) throws IOException {
 
-        GetHotelBookingResponse body = new GetHotelBookingResponse(firstName, lastName, totalPrice, depositPaid, checkIn, checkOut);
+        final String randomisedFirstName = randomiseSuffix(firstName);
+        GetHotelBookingResponse body = new GetHotelBookingResponse(randomisedFirstName, lastName, totalPrice, depositPaid, checkIn, checkOut);
         Gson gson = new Gson();
         String postBody = gson.toJson(body);
 
@@ -30,6 +33,7 @@ public class HotelBookingApi {
 
         if (response.bookingid != null) {
             testContext.bookingIds.put(firstName, Integer.parseInt(response.bookingid));
+            testContext.bookingFirstNames.put(firstName, randomisedFirstName);
         }
         else {
             Assert.fail("Booking creation failed");
@@ -69,7 +73,7 @@ public class HotelBookingApi {
     public void verifyNoBookingExists(String bookingFirstName) throws IOException {
         final Integer bookingId = testContext.bookingIds.get(bookingFirstName);
         GetHotelBookingResponse response = httpDrivers.get("http://hotel-test.equalexperts.io/booking/" + bookingId, 404);
-        Assert.assertNull(response);
+        Assert.assertNull(response, "Booking existed when it was expected not to \n");
     }
 
     private boolean isLiteral(final String input) {
