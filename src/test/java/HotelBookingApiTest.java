@@ -12,7 +12,13 @@ public class HotelBookingApiTest extends TestBase {
     @Test
     public void shouldCreateBooking() throws IOException {
         hotelBookingApi.createBooking("firstCreate", "last", "50", "true", "2018-02-28", "2018-03-01");
-        hotelBookingApi.getBooking("firstCreate", true);
+        hotelBookingApi.verifyBookingExists("firstCreate");
+    }
+
+    @Test
+    public void shouldGetBooking() throws IOException {
+        hotelBookingApi.createBooking("firstGet", "last", "50", "true", "2018-02-28", "2018-03-01");
+        hotelBookingApi.getBooking("firstGet", true);
     }
 
     @Test

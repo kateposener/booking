@@ -65,21 +65,25 @@ public class HotelBookingApi {
     public void deleteBooking(String bookingFirstName) throws IOException {
         final Integer bookingId = testContext.bookingIds.get(bookingFirstName);
         HttpResponse response = httpDrivers.delete("http://hotel-test.equalexperts.io/booking/" + bookingId);
-        testContext.bookingIds.remove(bookingFirstName);
 
         Assert.assertEquals(response.getStatusLine().getStatusCode(), 201, "Booking not deleted\n"); // this is an incorrect response code!
     }
 
-    public void tearDownBooking(String bookingFirstName) throws IOException {
-        final Integer bookingId = testContext.bookingIds.get(bookingFirstName);
-        httpDrivers.delete("http://hotel-test.equalexperts.io/booking/" + bookingId);
-        testContext.bookingIds.remove(bookingFirstName);
+    void tearDownBooking(String bookingFirstName) throws IOException {
+        try {
+            final Integer bookingId = testContext.bookingIds.get(bookingFirstName);
+            httpDrivers.delete("http://hotel-test.equalexperts.io/booking/" + bookingId);
+        }
+        catch (Exception e) {
+        }
     }
 
     public void verifyNoBookingExists(String bookingFirstName) throws IOException {
-        final Integer bookingId = testContext.bookingIds.get(bookingFirstName);
-        GetHotelBookingResponse response = httpDrivers.get("http://hotel-test.equalexperts.io/booking/" + bookingId, 404);
-        Assert.assertNull(response, "Booking existed when it was expected not to\n");
+        getBooking(bookingFirstName, false);
+    }
+
+    public void verifyBookingExists(String bookingFirstName) throws IOException {
+        getBooking(bookingFirstName, true);
     }
 
     private boolean isLiteral(final String input) {

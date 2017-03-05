@@ -45,9 +45,6 @@ public class HotelBookingUi {
     public void deleteBooking(String bookingFirstName) {
         final String firstName = testContext.bookingFirstNames.get(bookingFirstName);
         hotelBookingPage.deleteBooking(firstName);
-
-        testContext.bookingIds.remove(bookingFirstName);
-        testContext.bookingFirstNames.remove(bookingFirstName);
     }
 
     void closeBrowser() {

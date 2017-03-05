@@ -3,7 +3,6 @@ package dsl;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.io.IOException;
-import java.util.Map;
 
 public class TestBase {
 
@@ -18,13 +17,12 @@ public class TestBase {
     }
 
     private void tearDownBookingIds() throws IOException {
-        for (Map.Entry<String, Integer> entry : testContext.bookingIds.entrySet())
-        {
-            hotelBookingApi.tearDownBooking(entry.getKey());
+        for (String key : testContext.bookingIds.keySet()) {
+            hotelBookingApi.tearDownBooking(key);
         }
     }
 
-    protected static String randomiseSuffix(final String input) {
+    static String randomiseSuffix(final String input) {
         String randomString = RandomStringUtils.randomAlphanumeric(5);
         return input + randomString;
     }
