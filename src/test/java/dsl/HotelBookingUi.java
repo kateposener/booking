@@ -3,6 +3,7 @@ package dsl;
 import io.github.bonigarcia.wdm.ChromeDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.Assert;
 import pages.HotelBookingPage;
 
 import static dsl.TestBase.randomiseSuffix;
@@ -38,7 +39,7 @@ public class HotelBookingUi {
 
     public void verifyBookingByFirstName(final String bookingFirstName) {
         final String firstName = testContext.bookingFirstNames.get(bookingFirstName);
-        hotelBookingPage.verifyBookingByFirstName(firstName);
+        Assert.assertTrue(hotelBookingPage.verifyBookingByFirstName(firstName), "Booking was not found\n");
     }
 
     public void deleteBooking(String bookingFirstName) {

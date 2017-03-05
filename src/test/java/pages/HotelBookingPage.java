@@ -77,22 +77,27 @@ public class HotelBookingPage {
 
     private void waitForNewRowDisplayed(final String firstname) {
 
-        (new WebDriverWait(driver, 10)).until(new ExpectedCondition<Boolean>() {
-            public Boolean apply(WebDriver d) {
-                try {
-                    List<WebElement> rows = d.findElements(By.className("row"));
-                    for (WebElement row : rows) {
-                        if (row.getText().contains(firstname)) {
-                            return true;
+        try {
+            (new WebDriverWait(driver, 10)).until(new ExpectedCondition<Boolean>() {
+                public Boolean apply(WebDriver d) {
+                    try {
+                        List<WebElement> rows = d.findElements(By.className("row"));
+                        for (WebElement row : rows) {
+                            if (row.getText().contains(firstname)) {
+                                return true;
+                            }
                         }
                     }
+                    catch (Exception e) {
+                        d.navigate().refresh();
+                    }
+                    return false;
                 }
-                catch (Exception e) {
-                    d.navigate().refresh();
-                }
-                return false;
-            }
-        });
+            });
+        }
+        catch (Exception e) {
+
+        }
     }
 
     public Integer getBookingId(final String firstname) {

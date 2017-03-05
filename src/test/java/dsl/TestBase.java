@@ -20,7 +20,7 @@ public class TestBase {
     private void tearDownBookingIds() throws IOException {
         for (Map.Entry<String, Integer> entry : testContext.bookingIds.entrySet())
         {
-            hotelBookingApi.deleteBooking(entry.getKey());
+            hotelBookingApi.tearDownBooking(entry.getKey());
         }
     }
 
