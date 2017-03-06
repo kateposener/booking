@@ -4,12 +4,9 @@ This test framework enables the creation of API and UI acceptance tests for the 
 
 ## Prerequisites
 
-*JDK
-
-*Maven
-
-*Google Chrome
-
+* JDK
+* Maven
+* Google Chrome
 
 Note: The appropriate chromedriver for the system will automatically be downloaded to and then run from the default maven repository (found at ~/.m2).
 
