@@ -40,26 +40,12 @@ public class HotelBookingApi {
         }
     }
 
-    public void getBooking(final String bookingFirstName, final boolean expectResponse) throws IOException {
-        final String bookingId;
+    public void getBooking(final String bookingFirstName) throws IOException {
+        getWithExpectedStatus(bookingFirstName, 200, "");
+    }
 
-        if (isLiteral(bookingFirstName)) {
-            bookingId = extractLiteral(bookingFirstName);
-        }
-        else {
-            bookingId = testContext.bookingIds.get(bookingFirstName).toString();
-        }
-
-        GetHotelBookingResponse response = httpDrivers.get("http://hotel-test.equalexperts.io/booking/" + bookingId, 200);
-
-        if (expectResponse)
-        {
-            Assert.assertNotNull(response, "Did not get response and was expecting one\n");
-        }
-
-        else {
-            Assert.assertNull(response, "Got response when not expecting one\n");
-        }
+    public void getBookingWithError(String bookingFirstName, int expectedStatusCode, String expectedErrorMessage) throws IOException {
+        getWithExpectedStatus(bookingFirstName, expectedStatusCode, expectedErrorMessage);
     }
 
     public void deleteBooking(String bookingFirstName) throws IOException {
@@ -79,11 +65,11 @@ public class HotelBookingApi {
     }
 
     public void verifyNoBookingExists(String bookingFirstName) throws IOException {
-        getBooking(bookingFirstName, false);
+        getWithExpectedStatus(bookingFirstName, 404, "Not Found");
     }
 
     public void verifyBookingExists(String bookingFirstName) throws IOException {
-        getBooking(bookingFirstName, true);
+        getWithExpectedStatus(bookingFirstName, 200, "");
     }
 
     private boolean isLiteral(final String input) {
@@ -92,5 +78,28 @@ public class HotelBookingApi {
 
     private String extractLiteral(String input) {
         return input.substring(1, input.length()-1);
+    }
+
+    private void getWithExpectedStatus(final String bookingFirstName, final int expectedStatusCode, final String expectedErrorMessage) throws IOException {
+
+        final String bookingId;
+
+        if (isLiteral(bookingFirstName)) {
+            bookingId = extractLiteral(bookingFirstName);
+        }
+        else {
+            bookingId = testContext.bookingIds.get(bookingFirstName).toString();
+        }
+
+        GetHotelBookingResponse response = httpDrivers.get("http://hotel-test.equalexperts.io/booking/" + bookingId, expectedStatusCode, expectedErrorMessage);
+
+        if (expectedStatusCode == 200)
+        {
+            Assert.assertEquals(response.firstname ,testContext.bookingFirstNames.get(bookingFirstName), "Did not get expected first name\n");
+        }
+
+        else {
+            Assert.assertNull(response, "Got response when not expecting one\n");
+        }
     }
 }

@@ -8,6 +8,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.testng.Assert;
 import responses.GetHotelBookingResponse;
 import responses.PostHotelBookingResponse;
 
@@ -17,20 +18,25 @@ import java.io.InputStreamReader;
 
 public class HttpDrivers {
 
-    public GetHotelBookingResponse get(final String url, final Integer expectedStatusCode) throws IOException {
+    public GetHotelBookingResponse get(final String url, final int expectedStatusCode, String expectedErrorMessage) throws IOException {
         HttpClient client = HttpClientBuilder.create().build();
         HttpGet request = new HttpGet(url);
         request.addHeader("Accept", "application/json");
 
         HttpResponse response = client.execute(request);
+        Assert.assertEquals(response.getStatusLine().getStatusCode(), expectedStatusCode, "Unexpected status code\n");
 
         System.out.println("\nSending 'GET' request to URL : " + url);
 
+        StringBuffer result = readResponse(response);
+
         if (response.getStatusLine().getStatusCode() == 200) {
-            StringBuffer result = readResponse(response);
             Gson gson = new Gson();
             GetHotelBookingResponse getHotelBookingResponse = gson.fromJson(result.toString(), GetHotelBookingResponse.class);
             return getHotelBookingResponse;
+        }
+        else {
+            Assert.assertEquals(result.toString(), expectedErrorMessage, "Unexpected error message\n");
         }
 
         return null;

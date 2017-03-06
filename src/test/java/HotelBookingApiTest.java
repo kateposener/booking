@@ -18,12 +18,12 @@ public class HotelBookingApiTest extends TestBase {
     @Test
     public void shouldGetBooking() throws IOException {
         hotelBookingApi.createBooking("firstGet", "last", "50", "true", "2018-02-28", "2018-03-01");
-        hotelBookingApi.getBooking("firstGet", true);
+        hotelBookingApi.getBooking("firstGet");
     }
 
     @Test
     public void shouldErrorWhenGettingInvalidBookingId() throws IOException {
-        hotelBookingApi.getBooking("<1234>", false);
+        hotelBookingApi.getBookingWithError("<1234>", 404, "Not Found");
     }
 
     @Test
