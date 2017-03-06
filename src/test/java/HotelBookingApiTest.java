@@ -16,6 +16,12 @@ public class HotelBookingApiTest extends TestBase {
     }
 
     @Test
+    public void shouldErrorWhenEnteringInvalidPrice() throws IOException {
+        // FIXME: this is a bug, you should not get a 500 error
+        hotelBookingApi.createBookingWithError("firstCreate", "last", "text", "true", "2018-02-28", "2018-03-01", 500, "Internal Server Error");
+    }
+
+    @Test
     public void shouldGetBooking() throws IOException {
         hotelBookingApi.createBooking("firstGet", "last", "50", "true", "2018-02-28", "2018-03-01");
         hotelBookingApi.getBooking("firstGet");

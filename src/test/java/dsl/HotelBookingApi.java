@@ -25,33 +25,13 @@ public class HotelBookingApi {
 
     public void createBooking(String firstName, String lastName, String totalPrice,
                               String depositPaid, String checkIn, String checkOut) throws IOException {
+        postWithExpectedStatus(firstName, lastName, totalPrice, depositPaid, checkIn, checkOut, 200, "");
+    }
 
-        final String randomisedFirstName = randomiseSuffix(firstName);
-        GetHotelBookingResponse body = new GetHotelBookingResponse(randomisedFirstName, lastName, totalPrice, depositPaid, checkIn, checkOut);
-        Gson gson = new Gson();
-        String postBody = gson.toJson(body);
-
-        HttpResponse response = httpDrivers.post("http://hotel-test.equalexperts.io/booking", postBody);
-
-        HttpEntity responseBody = response.getEntity();
-        PostHotelBookingResponse postHotelBookingResponse = gson.fromJson(EntityUtils.toString(responseBody), PostHotelBookingResponse.class);
-
-        Assert.assertEquals(response.getStatusLine().getStatusCode(), 200);
-
-        if (postHotelBookingResponse.bookingid != null) {
-            testContext.bookingIds.put(firstName, Integer.parseInt(postHotelBookingResponse.bookingid));
-            testContext.bookingFirstNames.put(firstName, randomisedFirstName);
-
-            Assert.assertEquals(postHotelBookingResponse.booking.firstname, randomisedFirstName);
-            Assert.assertEquals(postHotelBookingResponse.booking.lastname, lastName);
-            Assert.assertEquals(postHotelBookingResponse.booking.totalprice, totalPrice);
-            Assert.assertEquals(postHotelBookingResponse.booking.depositpaid, depositPaid);
-            Assert.assertEquals(postHotelBookingResponse.booking.bookingdates.checkin, checkIn);
-            Assert.assertEquals(postHotelBookingResponse.booking.bookingdates.checkout, checkOut);
-        }
-        else {
-            Assert.fail("Booking creation failed\n");
-        }
+    public void createBookingWithError(String firstName, String lastName, String totalPrice,
+                                       String depositPaid, String checkIn, String checkOut, int expectedStatusCode,
+                                       String expectedErrorMessage) throws IOException {
+        postWithExpectedStatus(firstName, lastName, totalPrice, depositPaid, checkIn, checkOut, expectedStatusCode, expectedErrorMessage);
     }
 
     public void getBooking(final String bookingFirstName) throws IOException {
@@ -73,8 +53,7 @@ public class HotelBookingApi {
         try {
             final Integer bookingId = testContext.bookingIds.get(bookingFirstName);
             httpDrivers.delete("http://hotel-test.equalexperts.io/booking/" + bookingId);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         }
     }
 
@@ -91,7 +70,40 @@ public class HotelBookingApi {
     }
 
     private String extractLiteral(String input) {
-        return input.substring(1, input.length()-1);
+        return input.substring(1, input.length() - 1);
+    }
+
+    private void postWithExpectedStatus(String firstName, String lastName, String totalPrice,
+                                        String depositPaid, String checkIn, String checkOut, int expectedStatusCode,
+                                        String expectedErrorMessage) throws IOException {
+
+        final String randomisedFirstName = randomiseSuffix(firstName);
+        GetHotelBookingResponse body = new GetHotelBookingResponse(randomisedFirstName, lastName, totalPrice, depositPaid, checkIn, checkOut);
+        Gson gson = new Gson();
+        String postBody = gson.toJson(body);
+
+        HttpResponse response = httpDrivers.post("http://hotel-test.equalexperts.io/booking", postBody);
+
+        HttpEntity responseBody = response.getEntity();
+
+        Assert.assertEquals(response.getStatusLine().getStatusCode(), expectedStatusCode, "Unexpected status code\n");
+
+        if (expectedStatusCode == 200) {
+            PostHotelBookingResponse postHotelBookingResponse = gson.fromJson(EntityUtils.toString(responseBody), PostHotelBookingResponse.class);
+
+            testContext.bookingIds.put(firstName, Integer.parseInt(postHotelBookingResponse.bookingid));
+            testContext.bookingFirstNames.put(firstName, randomisedFirstName);
+
+            Assert.assertEquals(postHotelBookingResponse.booking.firstname, randomisedFirstName);
+            Assert.assertEquals(postHotelBookingResponse.booking.lastname, lastName);
+            Assert.assertEquals(postHotelBookingResponse.booking.totalprice, totalPrice);
+            Assert.assertEquals(postHotelBookingResponse.booking.depositpaid, depositPaid);
+            Assert.assertEquals(postHotelBookingResponse.booking.bookingdates.checkin, checkIn);
+            Assert.assertEquals(postHotelBookingResponse.booking.bookingdates.checkout, checkOut);
+        }
+        else {
+            Assert.assertEquals(EntityUtils.toString(responseBody), expectedErrorMessage, "Did not get expected error message\n");
+        }
     }
 
     private void getWithExpectedStatus(final String bookingFirstName, final int expectedStatusCode, final String expectedErrorMessage) throws IOException {
@@ -111,13 +123,11 @@ public class HotelBookingApi {
 
         Assert.assertEquals(response.getStatusLine().getStatusCode(), expectedStatusCode, "Unexpected status code\n");
 
-        if (expectedStatusCode == 200)
-        {
+        if (expectedStatusCode == 200) {
             GetHotelBookingResponse getHotelBookingResponse = gson.fromJson(EntityUtils.toString(responseBody), GetHotelBookingResponse.class);
 
-            Assert.assertEquals(getHotelBookingResponse.firstname ,testContext.bookingFirstNames.get(bookingFirstName), "Did not get expected first name\n");
+            Assert.assertEquals(getHotelBookingResponse.firstname, testContext.bookingFirstNames.get(bookingFirstName), "Did not get expected first name\n");
         }
-
         else {
             Assert.assertEquals(EntityUtils.toString(responseBody), expectedErrorMessage, "Did not get expected error message\n");
         }
