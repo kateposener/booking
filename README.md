@@ -1,11 +1,17 @@
 ## Synopsis
 
-This test framework enables the creation of API and UI acceptance tests of the hotel booking form.
+This test framework enables the creation of API and UI acceptance tests for the hotel booking form.
 
-The appropriate chromedriver for the system will automatically be downloaded to and then run from the default maven repository (found at ~/.m2).
+## Prerequisites
+
+JDK
+Maven
+Google Chrome
+
+Note: The appropriate chromedriver for the system will automatically be downloaded to and then run from the default maven repository (found at ~/.m2).
 
 ## Tests
 
-There are a few positive and negative test cases in the test suite, for the API and UI.
+There is one valid and one invalid test per HTTP method in the API, and one valid and one invalid test for the UI, to demonstrate the use of the framework.
 
-You will need Google Chrome and Maven installed in order to run the tests. They can then be run from the root of the project using the command _mvn test_.
+The tests can be run from the root of the project using the command _mvn test_.
