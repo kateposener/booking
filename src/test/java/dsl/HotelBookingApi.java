@@ -2,7 +2,9 @@ package dsl;
 
 import com.google.gson.Gson;
 import drivers.HttpDrivers;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
 import org.testng.Assert;
 import responses.GetHotelBookingResponse;
 import responses.PostHotelBookingResponse;
@@ -29,11 +31,23 @@ public class HotelBookingApi {
         Gson gson = new Gson();
         String postBody = gson.toJson(body);
 
-        PostHotelBookingResponse response = httpDrivers.post("http://hotel-test.equalexperts.io/booking", postBody);
+        HttpResponse response = httpDrivers.post("http://hotel-test.equalexperts.io/booking", postBody);
 
-        if (response.bookingid != null) {
-            testContext.bookingIds.put(firstName, Integer.parseInt(response.bookingid));
+        HttpEntity responseBody = response.getEntity();
+        PostHotelBookingResponse postHotelBookingResponse = gson.fromJson(EntityUtils.toString(responseBody), PostHotelBookingResponse.class);
+
+        Assert.assertEquals(response.getStatusLine().getStatusCode(), 200);
+
+        if (postHotelBookingResponse.bookingid != null) {
+            testContext.bookingIds.put(firstName, Integer.parseInt(postHotelBookingResponse.bookingid));
             testContext.bookingFirstNames.put(firstName, randomisedFirstName);
+
+            Assert.assertEquals(postHotelBookingResponse.booking.firstname, randomisedFirstName);
+            Assert.assertEquals(postHotelBookingResponse.booking.lastname, lastName);
+            Assert.assertEquals(postHotelBookingResponse.booking.totalprice, totalPrice);
+            Assert.assertEquals(postHotelBookingResponse.booking.depositpaid, depositPaid);
+            Assert.assertEquals(postHotelBookingResponse.booking.bookingdates.checkin, checkIn);
+            Assert.assertEquals(postHotelBookingResponse.booking.bookingdates.checkout, checkOut);
         }
         else {
             Assert.fail("Booking creation failed\n");
@@ -83,6 +97,7 @@ public class HotelBookingApi {
     private void getWithExpectedStatus(final String bookingFirstName, final int expectedStatusCode, final String expectedErrorMessage) throws IOException {
 
         final String bookingId;
+        Gson gson = new Gson();
 
         if (isLiteral(bookingFirstName)) {
             bookingId = extractLiteral(bookingFirstName);
@@ -91,15 +106,20 @@ public class HotelBookingApi {
             bookingId = testContext.bookingIds.get(bookingFirstName).toString();
         }
 
-        GetHotelBookingResponse response = httpDrivers.get("http://hotel-test.equalexperts.io/booking/" + bookingId, expectedStatusCode, expectedErrorMessage);
+        HttpResponse response = httpDrivers.get("http://hotel-test.equalexperts.io/booking/" + bookingId);
+        HttpEntity responseBody = response.getEntity();
+
+        Assert.assertEquals(response.getStatusLine().getStatusCode(), expectedStatusCode, "Unexpected status code\n");
 
         if (expectedStatusCode == 200)
         {
-            Assert.assertEquals(response.firstname ,testContext.bookingFirstNames.get(bookingFirstName), "Did not get expected first name\n");
+            GetHotelBookingResponse getHotelBookingResponse = gson.fromJson(EntityUtils.toString(responseBody), GetHotelBookingResponse.class);
+
+            Assert.assertEquals(getHotelBookingResponse.firstname ,testContext.bookingFirstNames.get(bookingFirstName), "Did not get expected first name\n");
         }
 
         else {
-            Assert.assertNull(response, "Got response when not expecting one\n");
+            Assert.assertEquals(EntityUtils.toString(responseBody), expectedErrorMessage, "Did not get expected error message\n");
         }
     }
 }
