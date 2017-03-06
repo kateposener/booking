@@ -39,6 +39,12 @@ public class HotelBookingApiTest extends TestBase {
         hotelBookingApi.verifyNoBookingExists("firstDelete");
     }
 
+    @Test
+    public void shouldErrorWhenDeletingInvalidBookingId() throws IOException {
+        // FIXME: this is a bug, you should get a 404 Not Found response
+        hotelBookingApi.deleteBookingWithError("<5678>", 405, "Method Not Allowed");
+    }
+
     @AfterTest
     public void afterTest() throws IOException {
         tearDown();

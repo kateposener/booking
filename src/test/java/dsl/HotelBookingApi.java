@@ -43,10 +43,12 @@ public class HotelBookingApi {
     }
 
     public void deleteBooking(String bookingFirstName) throws IOException {
-        final Integer bookingId = testContext.bookingIds.get(bookingFirstName);
-        HttpResponse response = httpDrivers.delete("http://hotel-test.equalexperts.io/booking/" + bookingId);
+        // FIXME: this is an incorrect response code
+        deleteWithExpectedStatus(bookingFirstName, 201, "");
+    }
 
-        Assert.assertEquals(response.getStatusLine().getStatusCode(), 201, "Booking not deleted\n"); // this is an incorrect response code!
+    public void deleteBookingWithError(String bookingFirstName, int expectedStatusCode, String expectedErrorMessage) throws IOException {
+        deleteWithExpectedStatus(bookingFirstName, expectedStatusCode, expectedErrorMessage);
     }
 
     void tearDownBooking(String bookingFirstName) throws IOException {
@@ -129,6 +131,19 @@ public class HotelBookingApi {
             Assert.assertEquals(getHotelBookingResponse.firstname, testContext.bookingFirstNames.get(bookingFirstName), "Did not get expected first name\n");
         }
         else {
+            Assert.assertEquals(EntityUtils.toString(responseBody), expectedErrorMessage, "Did not get expected error message\n");
+        }
+    }
+
+    private void deleteWithExpectedStatus(String bookingFirstName, int expectedStatusCode, String expectedErrorMessage) throws IOException {
+
+        final Integer bookingId = testContext.bookingIds.get(bookingFirstName);
+        HttpResponse response = httpDrivers.delete("http://hotel-test.equalexperts.io/booking/" + bookingId);
+
+        Assert.assertEquals(response.getStatusLine().getStatusCode(), expectedStatusCode, "Booking not deleted\n");
+
+        if (expectedStatusCode != 201) {
+            HttpEntity responseBody = response.getEntity();
             Assert.assertEquals(EntityUtils.toString(responseBody), expectedErrorMessage, "Did not get expected error message\n");
         }
     }
